@@ -9,13 +9,18 @@ mod day_01_tests {
     };
 
     #[test]
-    fn test_day01_solutions() {
+    fn test_day01_solution_part_one() {
         let calories_file_contents = include_str!("input/calories.txt");
 
         assert_eq!(
             most_calories_carried_by_an_elf_sum(calories_file_contents),
             67622
         );
+    }
+
+    #[test]
+    fn test_day01_solution_part_two() {
+        let calories_file_contents = include_str!("input/calories.txt");
 
         assert_eq!(
             total_calories_by_top_three_elves(calories_file_contents),

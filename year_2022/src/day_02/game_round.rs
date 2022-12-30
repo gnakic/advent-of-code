@@ -14,8 +14,10 @@ enum GameRoundScore {
 
 impl GameRound {
     pub fn score(&self) -> i32 {
-        self.player
-            .map_or_else(|| 0, |player_move| player_move as i32 + self.round_outcome_score() as i32)
+        self.player.map_or_else(
+            || 0,
+            |player_move| player_move as i32 + self.round_outcome_score() as i32,
+        )
     }
 
     fn round_outcome_score(&self) -> GameRoundScore {
@@ -36,9 +38,19 @@ impl Default for GameRound {
     }
 }
 
-impl From<&str> for GameRound {
-    fn from(game_round_line: &str) -> Self {
-        if let [encrypted_opponent_move, encrypted_player_move] = game_round_line.split(" ").collect::<Vec<&str>>()[..] {
+#[derive(PartialEq)]
+pub enum PlayerDecryptionStrategy {
+    PartOne,
+    PartTwo,
+}
+
+impl From<(&str, &PlayerDecryptionStrategy)> for GameRound {
+    fn from(input: (&str, &PlayerDecryptionStrategy)) -> Self {
+        let (game_round_line, strategy) = input;
+
+        if let [encrypted_opponent_move, encrypted_player_move] =
+            game_round_line.split(" ").collect::<Vec<&str>>()[..]
+        {
             let opponent_round_move = match encrypted_opponent_move {
                 "A" => Some(RoundMove::Rock),
                 "B" => Some(RoundMove::Paper),
@@ -46,11 +58,20 @@ impl From<&str> for GameRound {
                 _ => None,
             };
 
-            let player_round_move = match encrypted_player_move {
-                "X" => RoundMove::find_move_by_order(&opponent_round_move, Ordering::Less),
-                "Y" => opponent_round_move.clone(),
-                "Z" => RoundMove::find_move_by_order(&opponent_round_move, Ordering::Greater),
-                _ => None,
+            let player_round_move = if strategy == &PlayerDecryptionStrategy::PartOne {
+                match encrypted_player_move {
+                    "X" => Some(RoundMove::Rock),
+                    "Y" => Some(RoundMove::Paper),
+                    "Z" => Some(RoundMove::Scissors),
+                    _ => None,
+                }
+            } else {
+                match encrypted_player_move {
+                    "X" => RoundMove::find_move_by_order(&opponent_round_move, Ordering::Less),
+                    "Y" => opponent_round_move.clone(),
+                    "Z" => RoundMove::find_move_by_order(&opponent_round_move, Ordering::Greater),
+                    _ => None,
+                }
             };
 
             GameRound {
