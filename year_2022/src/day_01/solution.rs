@@ -27,11 +27,11 @@ mod day_01_tests {
 pub fn total_calories_by_top_three_elves(calories_file_contents: &str) -> i32 {
     fold_elf_calories::<BinaryHeap<Reverse<i32>>, _>(
         calories_file_contents,
-        |acc, current_elf_calories_sum| {
-            acc.push(Reverse(current_elf_calories_sum));
+        |top_three_elf_calorie_sums, current_elf_calories_sum| {
+            top_three_elf_calorie_sums.push(Reverse(current_elf_calories_sum));
 
-            if acc.len() > 3 {
-                acc.pop();
+            if top_three_elf_calorie_sums.len() > 3 {
+                top_three_elf_calorie_sums.pop();
             }
         },
     )
@@ -42,8 +42,8 @@ pub fn total_calories_by_top_three_elves(calories_file_contents: &str) -> i32 {
 pub fn most_calories_carried_by_an_elf_sum(calories_file_contents: &str) -> i32 {
     fold_elf_calories::<i32, _>(
         calories_file_contents,
-        |acc, mut current_elf_calories_sum| {
-            *acc = *acc.max(&mut current_elf_calories_sum);
+        |top_elf_calorie_sum, mut current_elf_calories_sum| {
+            *top_elf_calorie_sum = *top_elf_calorie_sum.max(&mut current_elf_calories_sum);
         },
     )
 }
