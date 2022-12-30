@@ -1,16 +1,16 @@
-use std::cmp::Reverse;
 use std::collections::BinaryHeap;
+use std::iter::Peekable;
+use std::str::Lines;
 
 #[cfg(test)]
 mod day_01_tests {
     use crate::day_01::solution::{
-        get_calories_file_contents, most_calories_carried_by_an_elf_sum,
-        total_calories_by_top_three_elves,
+        most_calories_carried_by_an_elf_sum, total_calories_by_top_three_elves,
     };
 
     #[test]
     fn test_day01_solutions() {
-        let calories_file_contents = get_calories_file_contents();
+        let calories_file_contents = include_str!("input/calories.txt");
 
         assert_eq!(
             most_calories_carried_by_an_elf_sum(calories_file_contents),
@@ -24,54 +24,49 @@ mod day_01_tests {
     }
 }
 
-pub fn total_calories_by_top_three_elves(calories_file_contents: &str) -> i32 {
-    fold_elf_calories::<BinaryHeap<Reverse<i32>>, _>(
-        calories_file_contents,
-        |top_three_elf_calorie_sums, current_elf_calories_sum| {
-            top_three_elf_calorie_sums.push(Reverse(current_elf_calories_sum));
-
-            if top_three_elf_calorie_sums.len() > 3 {
-                top_three_elf_calorie_sums.pop();
-            }
-        },
-    )
-    .into_iter()
-    .fold(0, |acc, calorie_count_result| acc + calorie_count_result.0)
-}
-
 pub fn most_calories_carried_by_an_elf_sum(calories_file_contents: &str) -> i32 {
-    fold_elf_calories::<i32, _>(
-        calories_file_contents,
-        |top_elf_calorie_sum, mut current_elf_calories_sum| {
-            *top_elf_calorie_sum = *top_elf_calorie_sum.max(&mut current_elf_calories_sum);
-        },
-    )
+    ElvesCalories::new(calories_file_contents)
+        .into_iter()
+        .fold(0, |acc, current_elf_calorie_count| {
+            acc.max(current_elf_calorie_count)
+        })
 }
 
-pub fn fold_elf_calories<T, F>(calories_file_contents: &str, collect: F) -> T
-where
-    F: Fn(&mut T, i32) -> (),
-    T: Default,
-{
-    let calories_file = calories_file_contents;
-    let mut calories_file_lines = calories_file.lines().peekable();
+pub fn total_calories_by_top_three_elves(calories_file_contents: &str) -> i32 {
+    ElvesCalories::new(calories_file_contents)
+        .into_iter()
+        .fold(BinaryHeap::<i32>::new(), |mut acc, current_elf_calories| {
+            acc.push(current_elf_calories);
+            acc
+        })
+        .into_iter()
+        .take(3)
+        .sum::<i32>()
+}
 
-    let mut acc = T::default();
+struct ElvesCalories<'a>(Peekable<Lines<'a>>);
 
-    while calories_file_lines.peek().is_some() {
-        let current_elf_calories = calories_file_lines
-            .by_ref()
-            .take_while(|line| !line.is_empty());
+impl ElvesCalories<'_> {
+    fn new(input: &str) -> ElvesCalories<'_> {
+        ElvesCalories(input.lines().peekable())
+    }
+}
+
+impl Iterator for ElvesCalories<'_> {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let lines = &mut self.0;
+
+        if lines.peek().is_none() {
+            return None;
+        }
+
+        let current_elf_calories = lines.by_ref().take_while(|line| !line.is_empty());
 
         let total_current_elf_calories =
             current_elf_calories.fold(0, |acc, c| acc + c.parse::<i32>().unwrap());
 
-        collect(&mut acc, total_current_elf_calories);
+        return Some(total_current_elf_calories);
     }
-
-    acc
-}
-
-fn get_calories_file_contents() -> &'static str {
-    return include_str!("input/calories.txt");
 }
