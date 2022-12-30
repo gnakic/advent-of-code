@@ -35,10 +35,6 @@ impl PartialOrd for RoundMove {
 
 impl Ord for RoundMove {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        if self == other {
-            return Ordering::Equal;
-        }
-
         match (self, other) {
             (RoundMove::Rock, RoundMove::Scissors) => Ordering::Greater,
             (RoundMove::Paper, RoundMove::Rock) => Ordering::Greater,
