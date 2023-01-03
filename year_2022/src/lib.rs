@@ -8,3 +8,8 @@ pub mod day_02 {
     pub mod game_round;
     pub mod round_move;
 }
+
+pub mod day_03 {
+    pub mod solution;
+    pub mod rucksack;
+}
