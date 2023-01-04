@@ -13,3 +13,8 @@ pub mod day_03 {
     pub mod solution;
     pub mod rucksack;
 }
+
+pub mod day_04 {
+    pub mod solution;
+    pub mod section_assignment_pair;
+}
