@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use once_cell::sync::Lazy;
+use std::collections::HashSet;
 
 static ITEM_PRIORITIES: Lazy<Vec<char>> =
     Lazy::new(|| ('a'..='z').chain('A'..='Z').collect::<Vec<char>>());
@@ -42,6 +42,13 @@ impl Rucksack {
         } else {
             None
         }
+    }
+
+    pub fn inventory(&self) -> Vec<&RucksackItem> {
+        self.first_compartment
+            .iter()
+            .chain(self.second_compartment.iter())
+            .collect()
     }
 }
 
