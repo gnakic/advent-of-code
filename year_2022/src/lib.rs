@@ -18,3 +18,9 @@ pub mod day_04 {
     pub mod solution;
     pub mod section_assignment_pair;
 }
+
+pub mod day_05 {
+    pub mod solution;
+    pub mod crate_stacks;
+    pub mod crate_move_instruction;
+}
