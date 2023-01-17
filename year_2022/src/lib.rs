@@ -24,3 +24,8 @@ pub mod day_05 {
     pub mod crate_stacks;
     pub mod crate_move_instruction;
 }
+
+pub mod day_06 {
+    pub mod solution;
+    pub mod datastream_buffer;
+}
