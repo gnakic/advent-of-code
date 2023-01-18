@@ -26,9 +26,9 @@ impl DatastreamBuffer {
         for window in buffer_contents_characters.windows(marker_size) {
             let unique_elements = window.iter().collect::<HashSet<&char>>();
 
-            let is_start_of_packet_marker = unique_elements.len() == window.len();
+            let is_datastream_marker = unique_elements.len() == window.len();
 
-            if is_start_of_packet_marker {
+            if is_datastream_marker {
                 processed_characters_until_marker_detection = buffer_contents_characters
                     .iter()
                     .position(|x| ptr::eq(&window[marker_size - 1], x))
